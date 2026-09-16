@@ -321,11 +321,9 @@
       </div>
     </section>
 
-    <section class="grid">
-      <div class="panel">
-        <h2>Actividad por proyecto</h2>
-        <div id="bars"><span class="muted">Cargando…</span></div>
-      </div>
+    <section class="panel" style="margin-bottom:18px;">
+      <h2>Actividad por proyecto</h2>
+      <div id="bars"><span class="muted">Cargando…</span></div>
     </section>
 
     <section class="panel">
@@ -456,12 +454,12 @@
     }
     function statusFor(dateStr) {
       const d = daysAgo(dateStr);
-      if (d <= 7) return {key: "active", cls: "ok", text: "Activo"};
-      if (d <= 14) return {key: "inactive", cls: "warn", text: "Atención"};
-      return {key: "inactive", cls: "danger", text: "Sin actividad"};
+      if (d <= 7) return { key: "active", cls: "ok", text: "Activo" };
+      if (d <= 14) return { key: "inactive", cls: "warn", text: "Atención" };
+      return { key: "inactive", cls: "danger", text: "Sin actividad" };
     }
     async function github(url) {
-      const r = await fetch(url, {headers: {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}});
+      const r = await fetch(url, { headers: { "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" } });
       if (!r.ok) {
         if (r.status === 403 || r.status === 429) throw new Error("GitHub alcanzó temporalmente el límite de consultas.");
         throw new Error(`GitHub respondió ${r.status}`);
@@ -511,14 +509,14 @@
         projectData.forEach(p => p.commitDates.forEach(x => {
           const d = new Date(x); if (d >= cursor && d < end) count++;
         }));
-        weeks.push({label: cursor.toLocaleDateString("es-PY", {day: "2-digit", month: "2-digit"}), value: count});
+        weeks.push({ label: cursor.toLocaleDateString("es-PY", { day: "2-digit", month: "2-digit" }), value: count });
         cursor = end;
       }
       return weeks;
     }
     function renderChart() {
       const data = weeklySeries(), el = document.getElementById("chart");
-      if (!data.length) {el.innerHTML = '<span class="muted">Sin datos.</span>'; return;}
+      if (!data.length) { el.innerHTML = '<span class="muted">Sin datos.</span>'; return; }
       const W = 520, H = 240, P = 34, max = Math.max(1, ...data.map(x => x.value));
       const x = i => P + (i * (W - 2 * P) / Math.max(1, data.length - 1));
       const y = v => H - P - (v * (H - 2 * P) / max);
@@ -557,7 +555,7 @@
         const results = await Promise.allSettled(STUDENTS.map(loadProject));
         projectData = results.filter(x => x.status === "fulfilled").map(x => x.value);
         const failed = results.filter(x => x.status === "rejected");
-        renderMetrics(); renderBars(); renderChart(); renderTable();
+        renderMetrics(); renderBars(); renderTable();
         const truncated = projectData.some(p => p.truncated);
         notice.textContent = failed.length
           ? `Se cargaron ${projectData.length} de ${STUDENTS.length} proyectos. ${failed.length} no pudieron consultarse.`
@@ -565,7 +563,7 @@
         if (failed.length) notice.classList.add("error");
       } catch (e) {
         notice.className = "notice error"; notice.textContent = e.message;
-      } finally {app.classList.remove("loading");}
+      } finally { app.classList.remove("loading"); }
     }
     document.getElementById("refreshBtn").addEventListener("click", load);
     document.getElementById("statusFilter").addEventListener("change", renderTable);
